@@ -1,0 +1,23 @@
+[
+    {
+        "item_name": "chipsy",
+        "quantity": 1,
+        "value": 10,
+        "date": "10-12-2000",
+        "category": "jedzenie"
+    },
+    {
+        "item_name": "ciastka",
+        "quantity": 1,
+        "value": 10,
+        "date": "10-12-2005",
+        "category": "jedzenie"
+    },
+    {
+        "item_name": "makaron",
+        "quantity": 1,
+        "value": 10,
+        "date": "10-12-2003",
+        "category": "jedzenie"
+    }
+]
