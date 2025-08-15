@@ -7,7 +7,12 @@ from datetime import datetime
 FILENAME = "expenses.json"
 
 def load_language():
-    input_language = exception_handling("Choose language (pl/en): ", str)
+    input_language = exception_handling("Choose language (pl/en): \n1. Pl\n2. EN\n", int)
+    if input_language == 1:
+        input_language = "pl"
+    elif input_language == 2:
+        input_language = "en"
+
     try:
         with open(f"{input_language}.json", "r") as file:
             language = json.load(file)
