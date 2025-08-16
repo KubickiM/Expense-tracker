@@ -1,20 +1,26 @@
 # Tracker wydatkow
 # Funkcja dodania, wyswietlania, usuwania, edytowania, zapisania pliku, odczytania pliku,
 # Dane kategoria, cena, nazwa, ilosc, data
+import os
 import json
 from datetime import datetime
 
 FILENAME = "expenses.json"
 
 def load_language():
-    input_language = exception_handling("Choose language (pl/en): \n1. Pl\n2. EN\n", int)
-    if input_language == 1:
-        input_language = "pl"
-    elif input_language == 2:
-        input_language = "en"
+    try:
+        entries = os.listdir()
+        language_files = [entry for entry in entries if entry.endswith(".json") and  entry != "expenses.json"]
+        for idx,file in enumerate(language_files, start=1):
+            print(f"{idx}. {file[:-5]}")
+    except FileNotFoundError:
+        print("No language files found in the current directory.")
+
+    input_language_idx = exception_handling("Choose language ", int) - 1
+    input_language = language_files[input_language_idx]
 
     try:
-        with open(f"{input_language}.json", "r") as file:
+        with open(f"{input_language}", "r") as file:
             language = json.load(file)
             return language
     except FileNotFoundError:
@@ -31,7 +37,6 @@ def exception_handling(prompt,type_func, positive_only=False,is_date=False, lang
 
                 if isinstance(value, (int,float)):
                     if positive_only and value<=0:
-                        #print("Wartosci musza byc wieksze od zera")
                         print(language['isinstance_number'])
                         continue
 
@@ -79,10 +84,7 @@ def add_expense(expenses,language=None):
     quantity = exception_handling(language['quantity'], int,positive_only=True)
     value = exception_handling(language['value'], float,positive_only=True)
     date = exception_handling(language['date'], str,is_date=True)
-    #date_obj = datetime.strptime(date, "%d-%m-%Y").date()
     category = exception_handling(language['category'], str)
-
-
 
     expenses.append({
         "item_name": item_name,
@@ -144,22 +146,19 @@ def view_expenses(expenses,language=None):
     for expense in choose_list:
         print(f"{expense['id']}. {expense['item_name']} - {expense['quantity']} - PLN:{expense['value']} - {expense['date'].strftime('%d-%m-%Y')} - {expense['category']}")
 
-
-
-
 def show_summary(expenses,language=None):
-    total = sum(expense['value'] for expense in expenses)
+    total = sum(expense['value']*expense['quantity'] for expense in expenses)
     print(f"\n{language['show_summary_total']}{total: .2f}")
 
 def category_list(expenses):
     seen_category = set()
     list_category = []
 
-    for idx,expense in enumerate(expenses,start=1):
+    for expense in expenses:
        if expense['category'] not in seen_category:
            seen_category.add(expense['category'])
            list_category.append({
-                "id": idx,
+                "id": len(list_category) + 1,
                 "category": expense['category']
             })
 
@@ -174,7 +173,7 @@ def cateogry_summary(expenses,language=None):
 
     for expense in expenses:
         if expense['category'] == list_category[input_category]['category']:
-            total_category += expense['value']
+            total_category += expense['value']* expense['quantity']
     print(f"\n{language['show_summary_total']}{total_category: .2f}")
 
 def main():
@@ -203,11 +202,11 @@ def main():
         elif choice == 5:
             view_expenses(expenses,language)
             del_expense(expenses,language)
-            save_expenses(expenses,language)
+            save_expenses(expenses)
         elif choice == 6:
             view_expenses(expenses,language)
             edit_expense(expenses,language)
-            save_expenses(expenses,language)
+            save_expenses(expenses)
         elif choice == 7:
             break
         else:
@@ -215,25 +214,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-''' 
-#input_sort = input("1. Sortowanie po dacie\ndowolny przycisk aby kontynuowac bez sortowania\n")
-def view_expenses(expenses):
-   id_count = 0
-    id_expenses_copy = []
-    for expense in expenses:
-        id_count = id_count+1
-        id_expenses_copy.append({
-            "id": id_count,
-            "item_name": expense['item_name'],
-            "quantity": expense['quantity'],
-            "value": expense['value'],
-            "date": expense['date'],
-            "category": expense['category']
-        })
-    id_expenses_copy_sorted = sorted(id_expenses_copy,key=lambda id_expenses_copy: id_expenses_copy['date'])
-    for expense in id_expenses_copy_sorted:
-        print(f"{expense['id']}. {expense['item_name']} - {expense['quantity']} - PLN:{expense['value']} - {expense['date'].strftime('%d-%m-%Y')} - {expense['category']}")
-'''

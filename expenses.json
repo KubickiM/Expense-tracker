@@ -14,13 +14,6 @@
         "category": "jedzenie"
     },
     {
-        "item_name": "makaron",
-        "quantity": 1,
-        "value": 10,
-        "date": "10-12-2003",
-        "category": "jedzenie"
-    },
-    {
         "item_name": "monster",
         "quantity": 2,
         "value": 20.0,

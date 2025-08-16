@@ -21,7 +21,7 @@
     "input_edit_record_3": "Enter the new product value",
     "input_edit_record_4": "Enter the new purchase date",
     "input_edit_record_5": "Enter the new product category",
-    "prompt_view_sort": "Choose a sorting option",
+    "prompt_view_sort": "Choose a sorting option 1.by date, Any number in the order of addition",
     "show_summary_total": "Expenses summary: PLN",
     "input_category": "Enter one of the categories",
     "main_menu_title": "Personal expense budget",
