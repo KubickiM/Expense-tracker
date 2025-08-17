@@ -1,15 +1,11 @@
-# Tracker wydatkow
-# Funkcja dodania, wyswietlania, usuwania, edytowania, zapisania pliku, odczytania pliku,
-# Dane kategoria, cena, nazwa, ilosc, data
 import os
 import json
 from datetime import datetime
 
-FILENAME = "expenses.json"
-
 def load_language():
+    language_folder = "languages"
     try:
-        entries = os.listdir()
+        entries = os.listdir(language_folder)
         language_files = [entry for entry in entries if entry.endswith(".json") and  entry != "expenses.json"]
         for idx,file in enumerate(language_files, start=1):
             print(f"{idx}. {file[:-5]}")
@@ -17,10 +13,11 @@ def load_language():
         print("No language files found in the current directory.")
 
     input_language_idx = exception_handling("Choose language ", int) - 1
-    input_language = language_files[input_language_idx]
+    language_file = language_files[input_language_idx]
+    language_path = os.path.join(language_folder, language_file)
 
     try:
-        with open(f"{input_language}", "r") as file:
+        with open(language_path, "r") as file:
             language = json.load(file)
             return language
     except FileNotFoundError:
@@ -56,26 +53,41 @@ def exception_handling(prompt,type_func, positive_only=False,is_date=False, lang
                 'date': language['isinstance_valueerror_date']
             }.get('date' if is_date else type_func, str(type_func))
 
-def load_expenses():
+
+
+def load_expenses(language=None):
+    expenses_folder = "expenses"
     try:
-        with open(FILENAME, "r") as file:
+        entries = os.listdir(expenses_folder)
+        expenses_files = [entry for entry in entries if entry.endswith(".json")]
+        for idx, file in enumerate(expenses_files, start=1):
+            print(f"{idx}. {file[:-5]}")
+    except FileNotFoundError:
+        print(language['expense_file_error'])
+
+    input_expenses_idx = exception_handling(language['input_expenses_idx'], int, positive_only=True) - 1
+    expenses_file = expenses_files[input_expenses_idx]
+    expenses_path = os.path.join(expenses_folder,expenses_file)
+
+    try:
+        with open(expenses_path, "r") as file:
             expenses = json.load(file)
             for expense in expenses:
                 expense['date'] = datetime.strptime(expense['date'], "%d-%m-%Y").date()
-            return expenses
+            return expenses,expenses_path
     except FileNotFoundError:
-        with open(FILENAME, "w") as file:
+        with open(expenses_path, "w") as file:
             json.dump([],file)
         return []
 
-def save_expenses(expenses):
+def save_expenses(expenses,expenses_path):
     serializable_expenses = []
     for expense in expenses:
         expense_copy = expense.copy()
         expense_copy['date'] = expense_copy['date'].strftime("%d-%m-%Y")
         serializable_expenses.append(expense_copy)
 
-    with open(FILENAME, "w") as file:
+    with open(expenses_path, "w") as file:
         json.dump(serializable_expenses, file, indent=4)
 
 def add_expense(expenses,language=None):
@@ -177,7 +189,7 @@ def cateogry_summary(expenses,language=None):
     print(f"\n{language['show_summary_total']}{total_category: .2f}")
 
 def main():
-    expenses = load_expenses()
+    expenses,expenses_path = load_expenses()
     language = load_language()
     while True:
         print(f"\n{language['main_menu_title']}")
@@ -202,11 +214,11 @@ def main():
         elif choice == 5:
             view_expenses(expenses,language)
             del_expense(expenses,language)
-            save_expenses(expenses)
+            save_expenses(expenses,expenses_path)
         elif choice == 6:
             view_expenses(expenses,language)
             edit_expense(expenses,language)
-            save_expenses(expenses)
+            save_expenses(expenses,expenses_path)
         elif choice == 7:
             break
         else:

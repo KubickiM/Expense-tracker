@@ -5,6 +5,8 @@
             "isinstance_valueerror_float": "Podaj liczbe zmienno przecinkową",
             "isinstance_valueerror_str": "Wprowadza poprawny format daty",
             "isinstance_valueerror_date": "Wprowadza poprawny format daty",
+            "expense_file_error": "Wybrany plik nie został znaleziony",
+            "input_expenses_idx": "Wybierz ktory plik otworzyc",
             "item_name": "Wprowadz nazwe zakupionego produktu ",
             "quantity": "Wprowadz ilosc zakupionego produktu ",
             "value": "Wprowadz wartość produktu ",
