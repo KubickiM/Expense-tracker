@@ -1,5 +1,8 @@
 import os
 import json
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import pandas as pd
 from datetime import datetime
 
 def load_language():
@@ -17,7 +20,7 @@ def load_language():
     language_path = os.path.join(language_folder, language_file)
 
     try:
-        with open(language_path, "r") as file:
+        with open(language_path, "r",encoding='utf-8') as file:
             language = json.load(file)
             return language
     except FileNotFoundError:
@@ -158,6 +161,30 @@ def view_expenses(expenses,language=None):
     for expense in choose_list:
         print(f"{expense['id']}. {expense['item_name']} - {expense['quantity']} - PLN:{expense['value']} - {expense['date'].strftime('%d-%m-%Y')} - {expense['category']}")
 
+    df = pd.DataFrame(choose_list)
+    df['total'] = df['value'] * df['quantity']
+
+    grouped = df.groupby('date').agg({
+        'total': 'sum',
+        'item_name': lambda x: ', '.join(x)
+    }).reset_index()
+
+    grouped['date_str'] = grouped['date'].apply(lambda d: d.strftime('%d-%m-%Y'))
+
+    plt.figure(figsize=(10, 5))
+    bars = plt.bar(grouped['date_str'], grouped['total'])
+
+    for bar, label in zip(bars, grouped['item_name']):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
+                 label, ha='center', va='bottom', rotation=0, fontsize=8)
+
+    plt.ylabel(language['view_expense_label_value'])
+    plt.title(language['view_expense_label_date'])
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
 def show_summary(expenses,language=None):
     total = sum(expense['value']*expense['quantity'] for expense in expenses)
     print(f"\n{language['show_summary_total']}{total: .2f}")
@@ -189,8 +216,9 @@ def cateogry_summary(expenses,language=None):
     print(f"\n{language['show_summary_total']}{total_category: .2f}")
 
 def main():
-    expenses,expenses_path = load_expenses()
     language = load_language()
+    expenses,expenses_path = load_expenses(language)
+
     while True:
         print(f"\n{language['main_menu_title']}")
         print(f"1. {language['main_menu_1']}")

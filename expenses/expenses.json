@@ -12,5 +12,12 @@
         "value": 20.0,
         "date": "14-08-2025",
         "category": "nopoj"
+    },
+    {
+        "item_name": "lody",
+        "quantity": 1,
+        "value": 5.0,
+        "date": "14-08-2025",
+        "category": "nopoj"
     }
 ]

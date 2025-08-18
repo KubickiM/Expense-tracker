@@ -24,6 +24,8 @@
             "input_edit_record_4": "Wprowadz nowa date zakupu",
             "input_edit_record_5": "Wprowadz nowa kategorie produktu",
             "prompt_view_sort": "Wybierz opcje sortowania 1.Po dacie, Dowolna liczba w kolejności dodawania",
+            "view_expense_label_value": "Wartość całkowita (PLN)",
+            "view_expense_label_date": "Wydatki pogrupowane według daty",
             "show_summary_total": "Podsumowanie wydatkow: PLN",
             "input_category": "Wprowadz jedna z kategorii",
             "main_menu_title": "Personalny budzet wydatkow",
