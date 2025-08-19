@@ -1,7 +1,6 @@
 import os
 import json
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import pandas as pd
 from datetime import datetime
 
@@ -77,7 +76,7 @@ def load_expenses(language=None):
             expenses = json.load(file)
             for expense in expenses:
                 expense['date'] = datetime.strptime(expense['date'], "%d-%m-%Y").date()
-            return expenses,expenses_path
+            return expenses,expenses_path,expenses_file
     except FileNotFoundError:
         with open(expenses_path, "w") as file:
             json.dump([],file)
@@ -208,6 +207,18 @@ def category_list(expenses):
 def cateogry_summary(expenses,language=None):
     list_category = category_list(expenses)
     total_category = 0
+
+    df = pd.DataFrame(expenses)
+    df['total'] = df['quantity'] * df['value']
+
+    grouped = df.groupby('category')['total'].sum()
+
+    plt.figure(figsize=(7, 7))
+    plt.pie(grouped, labels=grouped.index, autopct='%1.1f%%', startangle=140)
+    plt.title(language['category_summary_pie_chart_title'])
+    plt.tight_layout()
+    plt.show()
+
     input_category = exception_handling(f"\n{language['input_category']}",int) - 1
 
     for expense in expenses:
@@ -215,9 +226,23 @@ def cateogry_summary(expenses,language=None):
             total_category += expense['value']* expense['quantity']
     print(f"\n{language['show_summary_total']}{total_category: .2f}")
 
+def export_to_excel(expenses,expenses_file, language=None):
+    export_folder = "exports"
+
+    df = pd.DataFrame(expenses)
+    df['total'] = df['quantity'] * df['value']
+    df['date'] = pd.to_datetime(df['date'])
+
+    filename = f"{expenses_file}_export_{datetime.now().strftime('%d%m%Y_%H%M%S')}.xlsx"
+    filepath = os.path.join(export_folder, filename)
+
+    df.to_excel(filepath, index=False)
+
+    print(f"{language['excel_export_success']} {filename}")
+
 def main():
     language = load_language()
-    expenses,expenses_path = load_expenses(language)
+    expenses,expenses_path,expenses_file = load_expenses(language)
 
     while True:
         print(f"\n{language['main_menu_title']}")
@@ -227,7 +252,8 @@ def main():
         print(f"4. {language['main_menu_4']}")
         print(f"5. {language['main_menu_5']}")
         print(f"6. {language['main_menu_6']}")
-        print(f"7. {language['menu_exit']}")
+        print(f"7. {language['main_menu_7']}")
+        print(f"8. {language['menu_exit']}")
 
         choice = exception_handling(f"\n{language['main_menu_choice']}\n",int, positive_only=True)
 
@@ -248,6 +274,8 @@ def main():
             edit_expense(expenses,language)
             save_expenses(expenses,expenses_path)
         elif choice == 7:
+            export_to_excel(expenses,expenses_file,language)
+        elif choice == 8:
             break
         else:
             print(language['invalid_input'])

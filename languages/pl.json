@@ -35,6 +35,10 @@
             "main_menu_4": "Wyswietl wydatki z danej kategorii",
             "main_menu_5": "Usun wydatek",
             "main_menu_6": "Edytuj wydatek",
+            "main_menu_7": "Wyeksportuj do excela",
             "main_menu_choice": "Wybierz opcje z menu",
-            "invalid_input": "Nieprawidłowy wybór, spróbuj ponownie"
+            "invalid_input": "Nieprawidłowy wybór, spróbuj ponownie",
+            "excel_export_success": "Dane wyeksportowane do pliku:",
+            "category_summary_pie_chart_title": "Wydatki według kategorii"
+
         }

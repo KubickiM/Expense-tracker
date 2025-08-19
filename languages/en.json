@@ -35,6 +35,9 @@
     "main_menu_4": "View expenses by category",
     "main_menu_5": "Delete expense",
     "main_menu_6": "Edit expense",
+    "main_menu_7": "Export to excel",
     "main_menu_choice": "Choose an option from the menu",
-    "invalid_input": "Invalid choice, try again"
+    "invalid_input": "Invalid choice, try again",
+    "excel_export_success": "Data exported to file:",
+    "category_summary_pie_chart_title": "Expenses by category"
 }
