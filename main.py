@@ -139,6 +139,54 @@ def edit_expense(expenses,language=None):
             expenses[input_record]['category'] = exception_handling(language['input_edit_record_5'],str)
         else:
             break
+def filter_expenses(expenses, language=None):
+    if not expenses:
+        print(language['no_expenses'])
+        return
+
+    while True:
+        print(f"\n{language['filter_menu_title']}")
+        print(f"1. {language['filter_by_category']}")
+        print(f"2. {language['filter_by_date']}")
+        print(f"3. {language['filter_by_price']}")
+        print(f"4. {language['filter_by_name']}")
+        print(f"5. {language['menu_exit']}")
+
+        choice = exception_handling(language['filter_choice'], int, positive_only=True)
+
+        if choice == 1:
+            cat_list = category_list(expenses)
+            category_input = exception_handling(language['filter_input_category'], int)-1
+            choosen_category = cat_list[category_input]
+            filtered = [exp for exp in expenses if exp['category'].lower() == choosen_category['category']]
+
+        elif choice == 2:
+            start_date = exception_handling(language['filter_start_date'], str, is_date=True)
+            end_date = exception_handling(language['filter_end_date'], str, is_date=True)
+            filtered = [exp for exp in expenses if start_date <= exp['date'] <= end_date]
+
+        elif choice == 3:
+            min_price = exception_handling(language['filter_min_price'], float, positive_only=True)
+            max_price = exception_handling(language['filter_max_price'], float, positive_only=True)
+            filtered = [exp for exp in expenses if min_price <= exp['value'] <= max_price]
+
+        elif choice == 4:
+            name = exception_handling(language['filter_input_name'], str)
+            filtered = [exp for exp in expenses if name.lower() in exp['item_name'].lower()]
+
+        elif choice == 5:
+            break
+        else:
+            print(language['invalid_input'])
+            continue
+
+        if filtered:
+            print(f"\n{language['filter_results']}")
+            for idx, expense in enumerate(filtered, start=1):
+                print(f"{idx}. {expense['item_name']} - {expense['quantity']} szt. - PLN: {expense['value']} - "
+                      f"{expense['date'].strftime('%d-%m-%Y')} - {expense['category']}")
+        else:
+            print(language['filter_no_results'])
 
 def view_expenses(expenses,language=None):
 
@@ -150,15 +198,31 @@ def view_expenses(expenses,language=None):
         })
     choose_list = display_list
 
-
     prompt_view_sort = f"{language['prompt_view_sort']}\n"
     input_sort = exception_handling(prompt_view_sort, int, positive_only=True, is_date=False)
     if input_sort == 1:
+        display_list_sorted = sorted(display_list, key=lambda display_list: display_list['item_name'])
+        choose_list = display_list_sorted
+    if input_sort == 2:
         display_list_sorted = sorted(display_list, key=lambda display_list: display_list['date'])
+        choose_list = display_list_sorted
+    if input_sort == 3:
+        display_list_sorted = sorted(display_list, key=lambda display_list: display_list['value'])
         choose_list = display_list_sorted
 
     for expense in choose_list:
         print(f"{expense['id']}. {expense['item_name']} - {expense['quantity']} - PLN:{expense['value']} - {expense['date'].strftime('%d-%m-%Y')} - {expense['category']}")
+
+    while True:
+        print(f"\n1. {language['filter_menu_option']}")
+        print(f"2. {language['menu_exit']}")
+
+        view_expenses_menu = exception_handling(language['main_menu_choice'],int)
+
+        if view_expenses_menu == 1:
+            filter_expenses(expenses,language)
+        elif view_expenses_menu== 2:
+            break
 
     df = pd.DataFrame(choose_list)
     df['total'] = df['value'] * df['quantity']
