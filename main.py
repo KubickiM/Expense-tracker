@@ -2,6 +2,10 @@ import os
 import json
 import matplotlib.pyplot as plt
 import pandas as pd
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from datetime import datetime
 
 def load_language():
@@ -30,31 +34,30 @@ def exception_handling(prompt,type_func, positive_only=False,is_date=False, lang
         user_input = input(prompt)
         try:
             if is_date:
-                value = datetime.strptime(user_input,"%d-%m-%Y").date()
-            else:
-                value = type_func(user_input)
+                return datetime.strptime(user_input,"%d-%m-%Y").date()
 
-                if isinstance(value, (int,float)):
-                    if positive_only and value<=0:
-                        print(language['isinstance_number'])
-                        continue
+            value = type_func(user_input)
 
-                if isinstance(value, str):
-                    value = value.strip()
-                    if not value:
-                        print(language['isinstance_str'])
-                        continue
+            if isinstance(value, (int,float)) and  positive_only and value<=0:
+                print(language['isinstance_number'])
+                continue
+
+            if isinstance(value, str):
+                value = value.strip()
+                if not value:
+                    print(language['isinstance_str'])
+                    continue
 
             return value
 
         except ValueError:
-            type_name= {
+            error_messages= {
                 int:language['isistance_valueerror_int'],
                 float:language['isistance_valueerror_float'],
                 str:language['isistance_valueerror_str'],
                 'date': language['isinstance_valueerror_date']
             }.get('date' if is_date else type_func, str(type_func))
-
+            print(error_messages.get("date" if is_date else type_func, language['invalid_input']))
 
 
 def load_expenses(language=None):
@@ -304,6 +307,50 @@ def export_to_excel(expenses,expenses_file, language=None):
 
     print(f"{language['excel_export_success']} {filename}")
 
+def generate_pdf_report(expenses, output_folder="reports",language=None):
+    if not expenses:
+        print(language['error'])
+        return
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    report_name = f"{language['pdf_name']}_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.pdf"
+    report_path = os.path.join(output_folder, report_name)
+
+    df = pd.DataFrame(expenses)
+
+    doc = SimpleDocTemplate(report_path, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+
+    story.append(Paragraph(f"<b>{language['pdf_heading']}</b>", styles['Title']))
+    story.append(Spacer(1, 12))
+    story.append(Paragraph(f"{language['pdf_date']} {datetime.now().strftime('%d-%m-%Y %H:%M')}", styles['Normal']))
+    story.append(Spacer(1, 20))
+
+    story.append(Paragraph(f"<b>{language['pdf_list']}</b>", styles['Heading2']))
+    data = [["Data", "Nazwa", "Kategoria", "Ilość", "Wartość (PLN)"]]
+    for _, row in df.iterrows():
+        data.append([row['date'], row['item_name'], row['category'], row['quantity'], row['value']])
+
+    table = Table(data)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER')
+    ]))
+    story.append(table)
+    story.append(Spacer(1, 20))
+
+    total = df['value'].sum()
+    story.append(Paragraph(f"<b>{language['pdf_wrapup']}</b>", styles['Heading2']))
+    story.append(Paragraph(f"{language['pdf_summary']} <b>{total:.2f} PLN</b>", styles['Normal']))
+
+    doc.build(story)
+
+    print(f" {language['pdf_filepath']} {report_path}")
+    return report_path
+
 def main():
     language = load_language()
     expenses,expenses_path,expenses_file = load_expenses(language)
@@ -317,7 +364,8 @@ def main():
         print(f"5. {language['main_menu_5']}")
         print(f"6. {language['main_menu_6']}")
         print(f"7. {language['main_menu_7']}")
-        print(f"8. {language['menu_exit']}")
+        print(f"8. {language['main_menu_8']}")
+        print(f"9. {language['menu_exit']}")
 
         choice = exception_handling(f"\n{language['main_menu_choice']}\n",int, positive_only=True)
 
@@ -340,6 +388,8 @@ def main():
         elif choice == 7:
             export_to_excel(expenses,expenses_file,language)
         elif choice == 8:
+            generate_pdf_report(expenses,"reports",language)
+        elif choice == 9:
             break
         else:
             print(language['invalid_input'])

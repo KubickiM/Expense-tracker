@@ -37,6 +37,7 @@
             "main_menu_6": "Edytuj wydatek",
             "main_menu_7": "Wyeksportuj do excela",
             "main_menu_8": "Filtrowanie wydatkow",
+            "main_menu_9": "Wygeneruj raport z wydatków",
             "main_menu_choice": "Wybierz opcje z menu",
             "invalid_input": "Nieprawidłowy wybór, spróbuj ponownie",
             "excel_export_success": "Dane wyeksportowane do pliku:",
@@ -55,5 +56,13 @@
             "filter_input_name": "Podaj fragment nazwy:",
             "filter_results": "Znalezione wydatki:",
             "filter_no_results": "Brak wyników dla podanych kryteriów.",
-            "filter_menu_option": "Filtrowanie wyników"
+            "filter_menu_option": "Filtrowanie wyników",
+            "pdf_error": "Brak danych do wygenerowania raportu!",
+            "pdf_name": "Raport_pdf",
+            "pdf_heading": "Podstawowy raport wydatków",
+            "pdf_date": "Data wygenerowania raportu:",
+            "pdf_list": "Lista wszystkich wydatków",
+            "pdf_wrapup": "Podsumowanie",
+            "pdf_summary": "Łączne wydatki:",
+            "pdf_filepath": "Raport PDF wygenerowany: "
         }
