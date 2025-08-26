@@ -3,6 +3,7 @@ import json
 from reports import generate_pdf_report,export_to_excel
 from utils import exception_handling
 from expenses import  load_expenses,save_expenses,add_expense,view_expenses,show_summary,cateogry_summary,del_expense,edit_expense
+from analytics import analyze_trend, analyze_seasonality, forecast_expenses
 
 def load_language():
     language_folder = "languages"
@@ -39,7 +40,10 @@ def main():
         print(f"6. {language['main_menu_6']}")
         print(f"7. {language['main_menu_7']}")
         print(f"8. {language['main_menu_8']}")
-        print(f"9. {language['menu_exit']}")
+        print(f"9. {language['main_menu_9']}")
+        print(f"10. {language['main_menu_10']}")
+        print(f"11. {language['main_menu_11']}")
+        print(f"12. {language['menu_exit']}")
 
         choice = exception_handling(f"\n{language['main_menu_choice']}\n",int, positive_only=True)
 
@@ -64,6 +68,12 @@ def main():
         elif choice == 8:
             generate_pdf_report(expenses,"reports",language)
         elif choice == 9:
+            analyze_trend(expenses, language)
+        elif choice == 10:
+            analyze_seasonality(expenses, language)
+        elif choice == 11:
+            forecast_expenses(expenses, language, days_ahead=30)
+        elif choice == 12:
             break
         else:
             print(language['invalid_input'])
